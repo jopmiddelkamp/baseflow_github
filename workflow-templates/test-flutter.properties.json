@@ -1,0 +1,8 @@
+{
+    "name": "Run flutter tests",
+    "description": "Baseflow flutter test workflow.",
+    "iconName": "example-icon",
+    "categories": [
+        "Dart"
+    ]
+}
