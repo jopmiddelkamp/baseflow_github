@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       username:
-        required: true
+        app-dir: true
         type: string
     secrets:
       token:
@@ -17,5 +17,8 @@ jobs:
       with:
         channel: 'stable'
     - run: flutter pub get
+      working-directory: ${{ inputs.app-dir }}
     - run: flutter test
+      working-directory: ${{ inputs.app-dir }}
     - run: flutter build ios --release --no-codesign
+      working-directory: ${{ inputs.app-dir }}
