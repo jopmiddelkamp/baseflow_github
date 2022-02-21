@@ -2,8 +2,8 @@ name: Run flutter tests
 on:
   workflow_call:
     inputs:
-      username:
-        app-dir: true
+      app-dir:
+        required: true
         type: string
     secrets:
       token:
