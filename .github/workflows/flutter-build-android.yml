@@ -1,0 +1,28 @@
+name: Run flutter tests
+on:
+  workflow_call:
+    inputs:
+      app-dir:
+        required: true
+        type: string
+    secrets:
+      android_key_asc:
+        required: true
+      android_key_passphrase:
+        required: true
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+    - run: flutter pub get
+      working-directory: ${{ inputs.app-dir }}
+    - run: |
+        echo "${{secrets.android_key_asc}}" > upload.keystore.asc
+        gpg -d --passphrase "${{ secrets.android_key_passphrase }}" > android/upload.jks
+      working-directory: ${{ inputs.app-dir }}
+    - run: flutter test
+      working-directory: ${{ inputs.app-dir }}
