@@ -9,12 +9,13 @@ on:
       token:
         required: true
 jobs:
-  run-flutter-tests:
-    name: Pass input and secrets to my-action
-    runs-on: ubuntu-latest
+  build:
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
     - uses: subosito/flutter-action@v2
-    with:
-      channel: 'stable'
-    - run: flutter --version
+      with:
+        channel: 'stable'
+    - run: flutter pub get
+    - run: flutter test
+    - run: flutter build ios --release --no-codesign
