@@ -7,7 +7,7 @@ on:
         type: string
       android_keystore_path:
         required: false
-        default: 'android/upload.jks'
+        default: 'upload.jks'
         type: string
       android_keystore_alias:
         required: false
@@ -41,11 +41,9 @@ jobs:
         ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD: ${{ secrets.android_keystore_private_key_password }}
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
     - run: sh cli.sh --init
-    - run: flutter pub get
-      working-directory: ${{ inputs.app-dir }}
     - run: |
         echo "${{secrets.android_key_asc}}" > upload.keystore.asc
-        gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > ${{ inputs.android_keystore_path }} 
+        gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > 'android/'${{ inputs.android_keystore_path }} 
       working-directory: ${{ inputs.app-dir }}
     - run: flutter build appbundle --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  
       working-directory: ${{ inputs.app-dir }}
