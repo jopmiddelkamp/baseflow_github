@@ -36,10 +36,6 @@ jobs:
         ANDROID_KEYSTORE_ALIAS: ${{ inputs.android_keystore_alias }}
         ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD: ${{ secrets.android_keystore_private_key_password }}
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
-    - uses: actions/cache@v3
-      with:
-        path: '/Users/runner/hostedtoolcache/flutter'
-        key: ${{ runner.os }}-flutter-install-cache-stable
     - run: flutter pub get
       working-directory: ${{ inputs.app-dir }}
     - run: |
