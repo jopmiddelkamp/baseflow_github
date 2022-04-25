@@ -22,7 +22,7 @@ jobs:
       working-directory: ${{ inputs.app-dir }}
     - run: |
         echo "${{secrets.android_key_asc}}" > upload.keystore.asc
-        gpg -d --passphrase "${{ secrets.android_key_passphrase }}" > android/upload.jks
+        gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > android/upload.jks
       working-directory: ${{ inputs.app-dir }}
     - run: flutter test
       working-directory: ${{ inputs.app-dir }}
