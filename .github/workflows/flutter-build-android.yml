@@ -9,10 +9,19 @@ on:
         required: false
         default: 'android/upload.jks'
         type: string
+      android_keystore_alias:
+        required: false
+        default: 'upload'
+        type: string
+
     secrets:
       android_key_asc:
         required: true
       android_key_passphrase:
+        required: true
+      android_keystore_private_key_password:
+        required: true
+      android_keystore_password:
         required: true
 jobs:
   build:
@@ -23,11 +32,14 @@ jobs:
       with:
         channel: 'stable'
       env:
-        ANDROID_KEYSTORE_PATH: ${{ inputs.android_keystore_path}}
-    - uses: actions/cache@v1
+        ANDROID_KEYSTORE_PATH: ${{ inputs.android_keystore_path }}
+        ANDROID_KEYSTORE_ALIAS: ${{ inputs.android_keystore_alias }}
+        ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD: ${{ secrets.android_keystore_private_key_password }}
+        ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
+    - uses: actions/cache@v3
       with:
         path: '/Users/runner/hostedtoolcache/flutter'
-        key: ${{ runner.os }}-flutter-install-cache-${{ env.flutter_version }}
+        key: ${{ runner.os }}-flutter-install-cache-stable
     - run: flutter pub get
       working-directory: ${{ inputs.app-dir }}
     - run: |
