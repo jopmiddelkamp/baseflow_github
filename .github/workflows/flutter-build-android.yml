@@ -5,6 +5,10 @@ on:
       app-dir:
         required: true
         type: string
+      android_keystore_path:
+        required: false
+        default: 'android/upload.jks'
+        type: string
     secrets:
       android_key_asc:
         required: true
@@ -18,11 +22,13 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+      env:
+        ANDROID_KEYSTORE_PATH: ${{ inputs.a}}
     - run: flutter pub get
       working-directory: ${{ inputs.app-dir }}
     - run: |
         echo "${{secrets.android_key_asc}}" > upload.keystore.asc
-        gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > android/upload.jks
+        gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > ${{ inputs.android_keystore_path }} 
       working-directory: ${{ inputs.app-dir }}
     - run: flutter test
       working-directory: ${{ inputs.app-dir }}
