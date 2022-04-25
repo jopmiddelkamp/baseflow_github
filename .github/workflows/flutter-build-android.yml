@@ -23,7 +23,7 @@ jobs:
       with:
         channel: 'stable'
       env:
-        ANDROID_KEYSTORE_PATH: ${{ inputs.a}}
+        ANDROID_KEYSTORE_PATH: ${{ inputs.android_keystore_path}}
     - run: flutter pub get
       working-directory: ${{ inputs.app-dir }}
     - run: |
