@@ -26,7 +26,7 @@ jobs:
         ANDROID_KEYSTORE_PATH: ${{ inputs.android_keystore_path}}
     - uses: actions/cache@v1
       with:
-        path: ${{ matrix.flutter_path }}
+        path: '/Users/runner/hostedtoolcache/flutter'
         key: ${{ runner.os }}-flutter-install-cache-${{ env.flutter_version }}
     - run: flutter pub get
       working-directory: ${{ inputs.app-dir }}
