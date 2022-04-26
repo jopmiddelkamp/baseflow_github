@@ -84,7 +84,7 @@ jobs:
         ANDROID_KEYSTORE_ALIAS: ${{ inputs.android_keystore_alias }}
         ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD: ${{ secrets.android_keystore_private_key_password }}
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
-    - run: flutter build ios --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  
+    - run: flutter build ipa --release --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  
       working-directory: ${{ inputs.app-dir }}
     - name: Clean up keychain and provisioning profile
       if: ${{ always() }}
