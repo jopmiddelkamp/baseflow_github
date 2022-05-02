@@ -98,6 +98,10 @@ jobs:
       working-directory: ${{ inputs.app-dir }}
     - run: bundle exec fastlane deploy 
       env:
+        ANDROID_KEYSTORE_PATH: ${{ inputs.android_keystore_path }}
+        ANDROID_KEYSTORE_ALIAS: ${{ inputs.android_keystore_alias }}
+        ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD: ${{ secrets.android_keystore_private_key_password }}
+        ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
         PLAY_STORE_GSERVICE_ACCOUNT: ${{ inputs.play_store_gservice_account }}
       working-directory: ${{ inputs.app-dir }}/android
     - name: Clean up keychain and provisioning profile
