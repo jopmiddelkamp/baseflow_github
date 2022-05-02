@@ -23,6 +23,8 @@ on:
         required: true
       android_keystore_password:
         required: true
+      play_store_gservice_account:
+        required: true
       ios_keychain_password:
         required: true
       ios_provisioning_profile_asc:
@@ -72,6 +74,14 @@ jobs:
     - uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+    # TODO: remove this..
+    - name: Setup Fastlane
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.6'
+        bundler-cache: true
+        working-directory: ${{inputs.app-dir}}/android
+
     - run: sh cli.sh --init
     - run: |
         echo "${{secrets.android_key_asc}}" > upload.keystore.asc
@@ -86,6 +96,10 @@ jobs:
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
     - run: flutter build ipa --release --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  
       working-directory: ${{ inputs.app-dir }}
+    - run: fastlane beta
+      env:
+        PLAY_STORE_GSERVICE_ACCOUNT: ${{ inputs.play_store_gservice_account }}
+      working-directory: ${{ inputs.app-dir }}/android
     - name: Clean up keychain and provisioning profile
       if: ${{ always() }}
       run: |
