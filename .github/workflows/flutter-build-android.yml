@@ -96,7 +96,7 @@ jobs:
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
     - run: flutter build ipa --release --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  
       working-directory: ${{ inputs.app-dir }}
-    - run: fastlane beta
+    - run: fastlane deploy 
       env:
         PLAY_STORE_GSERVICE_ACCOUNT: ${{ inputs.play_store_gservice_account }}
       working-directory: ${{ inputs.app-dir }}/android
