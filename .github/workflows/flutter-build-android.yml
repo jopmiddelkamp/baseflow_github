@@ -91,11 +91,11 @@ jobs:
           # working-directory: ${{ inputs.app-dir }}
     - name: Release APPBUNDLE to internal track
       uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.play_store_gservice_account }}
-          packageName: com.beansapp.app
-          releaseFile: ${{inputs.app-dir}}/android/build/app/outputs/bundle/productionRelease/app-production-release.aab
-          track: internal
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.play_store_gservice_account }}
+        packageName: com.beansapp.app
+        releaseFile: ${{inputs.app-dir}}/android/build/app/outputs/bundle/productionRelease/app-production-release.aab
+        track: internal
     - name: Clean up keychain and provisioning profile
       if: ${{ always() }}
       run: |
