@@ -66,13 +66,13 @@ jobs:
       working-directory: ${{ inputs.app-dir }}
     - run: flutter build ipa --release --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  --export-options-plist=ios/export_options.plist
       working-directory: ${{ inputs.app-dir }}
-- name: 'Upload app to TestFlight'
-  uses: apple-actions/upload-testflight-build@v1
-  with: 
-    app-path: 'path/to/application.ipa' 
-    issuer-id: ${{ secrets.app_store_issuer_id}}
-    api-key-id: ${{ secrets.app_store_api_key_id}}
-    api-private-key: ${{ secrets.app_store_api_private_key}}
+    - name: 'Upload app to TestFlight'
+      uses: apple-actions/upload-testflight-build@v1
+      with: 
+        app-path: 'path/to/application.ipa' 
+        issuer-id: ${{ secrets.app_store_issuer_id}}
+        api-key-id: ${{ secrets.app_store_api_key_id}}
+        api-private-key: ${{ secrets.app_store_api_private_key}}
     - name: Clean up keychain and provisioning profile
       if: ${{ always() }}
       run: |
