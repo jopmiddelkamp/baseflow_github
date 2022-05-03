@@ -94,7 +94,7 @@ jobs:
       with:
         serviceAccountJsonPlainText: ${{ secrets.play_store_gservice_account }}
         packageName: com.beansapp.app
-        releaseFile: ${{inputs.app-dir}}/android/build/app/outputs/bundle/productionRelease/app-production-release.aab
+        releaseFile: ${{inputs.app-dir}}/build/app/outputs/bundle/productionRelease/app-production-release.aab
         track: internal
     - name: Clean up keychain and provisioning profile
       if: ${{ always() }}
