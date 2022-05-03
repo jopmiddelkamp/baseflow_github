@@ -60,10 +60,6 @@ jobs:
         channel: 'stable'
 
     - run: sh cli.sh --init
-    - run: |
-        echo "${{secrets.android_key_asc}}" > upload.keystore.asc
-        gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > 'android/app/'${{ inputs.android_keystore_path }} 
-      working-directory: ${{ inputs.app-dir }}
     - run: flutter build ipa --release --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  --export-options-plist=ios/export_options.plist
       working-directory: ${{ inputs.app-dir }}
     - name: 'Upload app to TestFlight'
