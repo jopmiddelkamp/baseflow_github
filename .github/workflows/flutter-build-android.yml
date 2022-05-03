@@ -90,7 +90,7 @@ jobs:
           #    - run: flutter build ipa --release --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  
           # working-directory: ${{ inputs.app-dir }}
     - name: Release APPBUNDLE to internal track
-      uses: r0adkll/upload-google-play@v1
+      uses: r0adkll/upload-google-play@v1.0.15
       with:
         serviceAccountJsonPlainText: ${{ secrets.play_store_gservice_account }}
         packageName: com.beansapp.app
