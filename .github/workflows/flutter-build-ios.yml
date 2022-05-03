@@ -65,7 +65,7 @@ jobs:
     - name: 'Upload app to TestFlight'
       uses: apple-actions/upload-testflight-build@v1
       with: 
-        app-path: 'path/to/application.ipa' 
+        app-path: '/Users/runner/work/beans-app/beans-app/beans_app/build/ios/ipa/Runner.ipa' 
         issuer-id: ${{ secrets.app_store_issuer_id}}
         api-key-id: ${{ secrets.app_store_api_key_id}}
         api-private-key: ${{ secrets.app_store_api_private_key}}
