@@ -59,6 +59,7 @@ jobs:
       with:
         channel: 'stable'
 
+    # TODO: Refactor next step (file is only available in the beans repo)
     - run: sh cli.sh --init
     - run: flutter build ipa --release --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  --export-options-plist=ios/export_options.plist
       working-directory: ${{ inputs.app-dir }}

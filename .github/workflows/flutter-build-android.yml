@@ -42,6 +42,7 @@ jobs:
       with:
         channel: 'stable'
 
+    # TODO: Refactor next step (file is only available in the beans repo)
     - run: sh cli.sh --init
     - run: |
         echo "${{secrets.android_key_asc}}" > upload.keystore.asc
