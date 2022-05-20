@@ -2,7 +2,10 @@ name: Run flutter tests
 on:
   workflow_call:
     inputs:
-      app-dir:
+      app_dir:
+        required: true
+        type: string
+      package_name:
         required: true
         type: string
       android_keystore_path:
@@ -43,21 +46,21 @@ jobs:
     - run: |
         echo "${{secrets.android_key_asc}}" > upload.keystore.asc
         gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > 'android/app/'${{ inputs.android_keystore_path }} 
-      working-directory: ${{ inputs.app-dir }}
-    - run: flutter build appbundle --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  
-      working-directory: ${{ inputs.app-dir }}
+      working-directory: ${{ inputs.app_dir }}
+    - run: flutter build appbundle --flavor production  
+      working-directory: ${{ inputs.app_dir }}
       env:
         ANDROID_KEYSTORE_PATH: ${{ inputs.android_keystore_path }}
         ANDROID_KEYSTORE_ALIAS: ${{ inputs.android_keystore_alias }}
         ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD: ${{ secrets.android_keystore_private_key_password }}
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
           #    - run: flutter build ipa --release --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  
-          # working-directory: ${{ inputs.app-dir }}
+          # working-directory: ${{ inputs.app_dir }}
     - name: Release APPBUNDLE to internal track
       uses: r0adkll/upload-google-play@v1.0.16
       with:
         serviceAccountJsonPlainText: ${{ secrets.play_store_gservice_account }}
-        packageName: com.beansapp.app
-        releaseFile: ${{inputs.app-dir}}/build/app/outputs/bundle/productionRelease/app-production-release.aab
+        packageName: ${{ inputs.package_name }}
+        releaseFile: ${{inputs.app_dir}}/build/app/outputs/bundle/productionRelease/app-production-release.aab
         status: 'draft'
         track: internal
