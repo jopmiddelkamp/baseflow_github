@@ -16,6 +16,9 @@ on:
       environment: # options development|staging|production
         required: true
         type: string
+      packageName: # this should be optional.. https://github.com/r0adkll/upload-google-play/issues/103
+        required: true
+        type: string
 
     secrets:
       android_key_asc:
@@ -98,6 +101,7 @@ jobs:
         releaseFile: ${{inputs.app-dir}}/build/app/outputs/bundle/productionRelease/app-production-release.aab
         status: 'draft'
         track: internal
+        packageName: ${{inputs.packageName}}
     - name: Clean up keychain and provisioning profile
       if: ${{ always() }}
       run: |
