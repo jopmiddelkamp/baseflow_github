@@ -13,6 +13,9 @@ on:
         required: true 
         default: 'upload'
         type: string
+      environment: # options development|staging|production
+        required: true
+        type: string
 
     secrets:
       android_key_asc:
@@ -75,25 +78,23 @@ jobs:
       with:
         channel: 'stable'
 
+    - run: sh pre_build.sh ${{ inputs.environment }}
     - run: sh cli.sh --init
     - run: |
         echo "${{secrets.android_key_asc}}" > upload.keystore.asc
         gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > 'android/app/'${{ inputs.android_keystore_path }} 
       working-directory: ${{ inputs.app-dir }}
-    - run: flutter build appbundle --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  
+    - run: flutter build appbundle  --release --flavor ${{ inputs.environment }} --target='lib/main_${{ inputs.environment }}.dart'
       working-directory: ${{ inputs.app-dir }}
       env:
         ANDROID_KEYSTORE_PATH: ${{ inputs.android_keystore_path }}
         ANDROID_KEYSTORE_ALIAS: ${{ inputs.android_keystore_alias }}
         ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD: ${{ secrets.android_keystore_private_key_password }}
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
-          #    - run: flutter build ipa --release --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  
-          # working-directory: ${{ inputs.app-dir }}
     - name: Release APPBUNDLE to internal track
       uses: r0adkll/upload-google-play@v1.0.16
       with:
         serviceAccountJsonPlainText: ${{ secrets.play_store_gservice_account }}
-        packageName: com.beansapp.app
         releaseFile: ${{inputs.app-dir}}/build/app/outputs/bundle/productionRelease/app-production-release.aab
         status: 'draft'
         track: internal

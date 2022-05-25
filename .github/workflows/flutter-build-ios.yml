@@ -5,6 +5,9 @@ on:
       app-dir:
         required: true
         type: string
+      environment: # options development|staging|production
+        required: true
+        type: string
 
     secrets:
       ios_keychain_password:
@@ -59,8 +62,9 @@ jobs:
       with:
         channel: 'stable'
 
+    - run: sh pre_build.sh ${{ inputs.environment }}
     - run: sh cli.sh --init
-    - run: flutter build ipa --release --flavor production --dart-define "ENVIRONMENT=production"  --dart-define "API_BASE_URL=https://api.beansapp.com/v1/"  --export-options-plist=ios/export_options.plist
+    - run: flutter build ipa --release --flavor ${{ inputs.environment }} --target='lib/main_${{ inputs.environment }}.dart' --export-options-plist=ios/export_options.plist
       working-directory: ${{ inputs.app-dir }}
     - name: 'Upload app to TestFlight'
       uses: apple-actions/upload-testflight-build@v1
