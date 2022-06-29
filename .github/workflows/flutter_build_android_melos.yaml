@@ -26,9 +26,9 @@ on:
       android_key_passphrase:
         required: true
       android_keystore_private_key_password:
-        required: true
+        required: false
       android_keystore_password:
-        required: true
+        required: false
       play_store_gservice_account:
         required: true
 jobs:
