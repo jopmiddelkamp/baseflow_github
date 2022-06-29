@@ -5,14 +5,6 @@ on:
       app-dir:
         required: true
         type: string
-      android_keystore_path:
-        required: true
-        default: 'upload.jks'
-        type: string
-      android_keystore_alias:
-        required: true
-        default: 'upload'
-        type: string
       environment: # options development|staging|production
         required: true
         type: string
