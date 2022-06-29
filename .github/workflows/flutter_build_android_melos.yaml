@@ -50,12 +50,14 @@ jobs:
       - name: Decrypt keystore
         run: |
           ls -la
-          echo "${{secrets.android_key_asc}}" > upload.keystore.asc
+          echo "${{secrets.android_key_asc}}" > key.properties.asc
           gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > key.properties
+          echo "${{secrets.android_key_store_asc}}" > upload.keystore.asc
+          gpg -d --passphrase "${{ secrets.android_key_store_passphrase }}" --batch upload-keystore.jks.asc > upload-keystore.jks
           ls -la
         working-directory: ${{ inputs.app-dir }}/android
       - name: Melos build Android Production
-        run: melos build:android
+        run: flutter build appbundle --flavor=production --release --build-number=$GITHUB_RUN_NUMBER
       - name: Release APPBUNDLE to internal track
         uses: r0adkll/upload-google-play@v1.0.16
         with:
