@@ -1,4 +1,4 @@
-name: Run flutter tests
+name: Deploy Android
 on:
   workflow_call:
     inputs:
