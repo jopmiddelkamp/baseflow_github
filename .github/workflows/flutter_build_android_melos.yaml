@@ -41,13 +41,10 @@ jobs:
         run: melos bootstrap && melos generate
       - name: Decrypt keystore
         run: |
-          ls -la
           echo "${{secrets.android_key_asc}}" > key.properties.asc
           echo "${{secrets.android_keystore_asc}}" > upload-keystore.jks.asc
-          ls -la
           gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch key.properties.asc > key.properties
           gpg -d --passphrase "${{ secrets.android_keystore_passphrase }}" --batch upload-keystore.jks.asc > upload-keystore.jks
-          ls -la
         working-directory: ${{ inputs.app-dir }}/android
       - name: Melos build Android Production
         run: melos build:android:runner
