@@ -17,10 +17,10 @@ on:
         required: true
       android_key_passphrase:
         required: true
-      android_keystore_private_key_password:
-        required: false
-      android_keystore_password:
-        required: false
+      android_keystore_asc:
+        required: true
+      android_keystore_passphrase:
+        required: true
       play_store_gservice_account:
         required: true
 jobs:
@@ -44,7 +44,7 @@ jobs:
           ls -la
           echo "${{secrets.android_key_asc}}" > key.properties.asc
           gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > key.properties
-          echo "${{secrets.android_key_store_asc}}" > upload.keystore.asc
+          echo "${{secrets.android_key_store_asc}}" > upload-keystore.jks.asc
           gpg -d --passphrase "${{ secrets.android_key_store_passphrase }}" --batch upload-keystore.jks.asc > upload-keystore.jks
           ls -la
         working-directory: ${{ inputs.app-dir }}/android
