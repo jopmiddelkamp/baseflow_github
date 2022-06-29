@@ -51,10 +51,9 @@ jobs:
         run: |
           ls -la
           echo "${{secrets.android_key_asc}}" > upload.keystore.asc
-          gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > "android/${{ inputs.android_keystore_path }}"
+          gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > key.properties
           ls -la
-          ls -la android/
-        working-directory: ${{ inputs.app-dir }}
+        working-directory: ${{ inputs.app-dir }}/android
       - name: Melos build Android Production
         run: melos build:android
       - name: Release APPBUNDLE to internal track
