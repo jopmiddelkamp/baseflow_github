@@ -49,6 +49,7 @@ jobs:
         run: melos bootstrap && melos generate
       - name: Decrypt keystore
         run: |
+          ls -la
           echo "${{secrets.android_key_asc}}" > upload.keystore.asc
           gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > '${{inputs.app-dir}}/'${{ inputs.android_keystore_path }}
         working-directory: ${{ inputs.app-dir }}
