@@ -50,7 +50,7 @@ jobs:
           ls -la
         working-directory: ${{ inputs.app-dir }}/android
       - name: Melos build Android Production
-        run: melos build:android
+        run: melos build:android:runner
       - name: Release APPBUNDLE to internal track
         uses: r0adkll/upload-google-play@v1.0.16
         with:
