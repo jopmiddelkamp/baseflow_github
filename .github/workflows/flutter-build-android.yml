@@ -6,11 +6,11 @@ on:
         required: true
         type: string
       android_keystore_path:
-        required: true 
+        required: true
         default: 'upload.jks'
         type: string
       android_keystore_alias:
-        required: true 
+        required: true
         default: 'upload'
         type: string
       environment: # options development|staging|production
@@ -44,66 +44,66 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin' # See 'Supported distributions' for available optionsjava-version
-        java-version: '17'
-    - name: Install the Apple certificate and provisioning profile
-      env:
-        BUILD_CERTIFICATE_BASE64: ${{ secrets.ios_signing_key_asc }}
-        P12_PASSWORD: ${{ secrets.ios_signing_key_password }}
-        BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.ios_provisioning_profile_asc }}
-        KEYCHAIN_PASSWORD: ${{ secrets.ios_keychain_password }}
-      run: |
-        # create variables
-        CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-        PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available optionsjava-version
+          java-version: '17'
+      - name: Install the Apple certificate and provisioning profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.ios_signing_key_asc }}
+          P12_PASSWORD: ${{ secrets.ios_signing_key_password }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.ios_provisioning_profile_asc }}
+          KEYCHAIN_PASSWORD: ${{ secrets.ios_keychain_password }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-        # import certificate and provisioning profile from secrets
-        echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
-        echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
 
-        # create temporary keychain
-        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-        # import certificate to keychain
-        security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-        security list-keychain -d user -s $KEYCHAIN_PATH
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
 
-        # apply provisioning profile
-        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
 
-    - run: sh pre_build.sh ${{ inputs.environment }}
-    - run: sh cli.sh --init
-    - run: |
-        echo "${{secrets.android_key_asc}}" > upload.keystore.asc
-        gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > 'android/app/'${{ inputs.android_keystore_path }} 
-      working-directory: ${{ inputs.app-dir }}
-    - run: flutter build appbundle  --release --flavor ${{ inputs.environment }} --target='lib/main_${{ inputs.environment }}.dart'
-      working-directory: ${{ inputs.app-dir }}
-      env:
-        ANDROID_KEYSTORE_PATH: ${{ inputs.android_keystore_path }}
-        ANDROID_KEYSTORE_ALIAS: ${{ inputs.android_keystore_alias }}
-        ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD: ${{ secrets.android_keystore_private_key_password }}
-        ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
-    - name: Release APPBUNDLE to internal track
-      uses: r0adkll/upload-google-play@v1.0.16
-      with:
-        serviceAccountJsonPlainText: ${{ secrets.play_store_gservice_account }}
-        releaseFile: ${{inputs.app-dir}}/build/app/outputs/bundle/productionRelease/app-production-release.aab
-        status: 'draft'
-        track: internal
-        packageName: ${{inputs.packageName}}
-    - name: Clean up keychain and provisioning profile
-      if: ${{ always() }}
-      run: |
-        security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-        rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+      - run: sh pre_build.sh ${{ inputs.environment }}
+      - run: sh cli.sh --init
+      - run: |
+          echo "${{secrets.android_key_asc}}" > upload.keystore.asc
+          gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch upload.keystore.asc > 'android/app/'${{ inputs.android_keystore_path }}
+        working-directory: ${{ inputs.app-dir }}
+      - run: flutter build appbundle  --release --flavor ${{ inputs.environment }} --target='lib/main_${{ inputs.environment }}.dart'
+        working-directory: ${{ inputs.app-dir }}
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ inputs.android_keystore_path }}
+          ANDROID_KEYSTORE_ALIAS: ${{ inputs.android_keystore_alias }}
+          ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD: ${{ secrets.android_keystore_private_key_password }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.android_keystore_password }}
+      - name: Release APPBUNDLE to internal track
+        uses: r0adkll/upload-google-play@v1.0.16
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.play_store_gservice_account }}
+          releaseFile: ${{inputs.app-dir}}/build/app/outputs/bundle/productionRelease/app-production-release.aab
+          status: 'draft'
+          track: internal
+          packageName: ${{inputs.packageName}}
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision

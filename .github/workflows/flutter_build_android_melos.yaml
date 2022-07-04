@@ -1,0 +1,58 @@
+name: Deploy Android
+on:
+  workflow_call:
+    inputs:
+      app-dir:
+        required: true
+        type: string
+      environment: # options development|staging|production
+        required: true
+        type: string
+      packageName: # this should be optional.. https://github.com/r0adkll/upload-google-play/issues/103
+        required: true
+        type: string
+
+    secrets:
+      android_key_asc:
+        required: true
+      android_key_passphrase:
+        required: true
+      android_keystore_asc:
+        required: true
+      android_keystore_passphrase:
+        required: true
+      play_store_gservice_account:
+        required: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available optionsjava-version
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Download melos
+        run: dart pub global activate melos
+      - name: Melos init
+        run: melos bootstrap && melos generate
+      - name: Decrypt keystore
+        run: |
+          echo "${{secrets.android_key_asc}}" > key.properties.asc
+          echo "${{secrets.android_keystore_asc}}" > upload-keystore.jks.asc
+          gpg -d --passphrase "${{ secrets.android_key_passphrase }}" --batch key.properties.asc > key.properties
+          gpg -d --passphrase "${{ secrets.android_keystore_passphrase }}" --batch upload-keystore.jks.asc > upload-keystore.jks
+        working-directory: ${{ inputs.app-dir }}/android
+      - name: Melos build Android Production
+        run: melos build:android:runner
+      - name: Release APPBUNDLE to internal track
+        uses: r0adkll/upload-google-play@v1.0.16
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.play_store_gservice_account }}
+          releaseFile: ${{inputs.app-dir}}/build/app/outputs/bundle/productionRelease/app-production-release.aab
+          status: 'draft'
+          track: internal
+          packageName: ${{inputs.packageName}}
