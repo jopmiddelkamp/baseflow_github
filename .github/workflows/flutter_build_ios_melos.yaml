@@ -10,13 +10,13 @@ on:
         type: string
 
     secrets:
-      ios_keychain_password:
+      ios_provisioning_profile_password:
         required: true
       ios_provisioning_profile_asc:
         required: true
-      ios_signing_key_asc:
+      ios_certificate_asc:
         required: true
-      ios_signing_key_password:
+      ios_certificate_password:
         required: true
       app_store_api_private_key:
         required: true
@@ -37,19 +37,20 @@ jobs:
           BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.ios_provisioning_profile_asc }}
           KEYCHAIN_PASSWORD: ${{ secrets.ios_keychain_password }}
         run: |
+          echo "${{secrets.ios_provisioning_profile_asc}}" > provisioningprofile.mobileprovision.asc
+          gpg -d --passphrase "${{ secrets.ios_provisioning_profile_password }}" --batch provisioningprofile.mobileprovision.asc > provisioningprofile.mobileprovision
+          echo "${{secrets.ios_certificate_asc}}" > distribution.p12.asc
+          gpg -d --passphrase "${{ secrets.ios_certificate_password }}" --batch distribution.p12.asc > distribution.p12
+
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-          # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
-
           # create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security create-keychain -p "abcdefg" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security unlock-keychain -p "abcdefg" $KEYCHAIN_PATH
 
           # import certificate to keychain
           security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
