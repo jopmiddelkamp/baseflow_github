@@ -47,7 +47,7 @@ jobs:
           CERTIFICATE_PATH=$RUNNER_TEMP/distribution.p12
           PP_PATH=$RUNNER_TEMP/provisioningprofile.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          RANDOM_KEYCHAIN_PASSWORD="$(openssl rand -base64 50)"
+          RANDOM_KEYCHAIN_PASSWORD="$(openssl rand -hex 100)"
 
           # decrypt the provisioning profile and signing certificate
           echo "${{secrets.ios_provisioning_profile_asc}}" > provisioningprofile.mobileprovision.asc
