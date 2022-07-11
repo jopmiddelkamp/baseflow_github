@@ -24,6 +24,8 @@ on:
         required: true
       app_store_api_key_id:
         required: true
+      p12_password:
+        required: true
 
 jobs:
   build:
