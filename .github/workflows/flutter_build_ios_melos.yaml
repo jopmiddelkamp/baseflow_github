@@ -42,6 +42,8 @@ jobs:
           echo "${{secrets.ios_certificate_asc}}" > distribution.p12.asc
           gpg -d --passphrase "${{ secrets.ios_certificate_password }}" --batch distribution.p12.asc > $RUNNER_TEMP/distribution.p12
 
+          openssl version
+
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/distribution.p12
           PP_PATH=$RUNNER_TEMP/provisioningprofile.mobileprovision
