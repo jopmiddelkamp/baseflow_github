@@ -43,24 +43,20 @@ jobs:
           CERTIFICATE_PATH=$RUNNER_TEMP/distribution.p12
           PP_PATH=$RUNNER_TEMP/provisioningprofile.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          RANDOM_KEYCHAIN_PASSWORD="$(openssl rand -base64 50)"
 
-          echo $(openssl version)
           echo "${{secrets.ios_provisioning_profile_asc}}" > provisioningprofile.mobileprovision.asc
           gpg -d --passphrase "${{ secrets.ios_provisioning_profile_password }}" --batch provisioningprofile.mobileprovision.asc > $PP_PATH
           echo "${{secrets.ios_certificate_asc}}" > distribution.p12.asc
           gpg -d --passphrase "${{ secrets.ios_certificate_password }}" --batch distribution.p12.asc > $CERTIFICATE_PATH
 
           # create temporary keychain
-          echo "security create-keychain -p baseflow $KEYCHAIN_PATH"
-          security create-keychain -p baseflow $KEYCHAIN_PATH
-          echo "security set-keychain-settings -lut 21600 $KEYCHAIN_PATH"
+          security create-keychain -p $RANDOM_KEYCHAIN_PASSWORD $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          echo "security unlock-keychain -p baseflow $KEYCHAIN_PATH"
-          security unlock-keychain -p baseflow $KEYCHAIN_PATH
+          security unlock-keychain -p $RANDOM_KEYCHAIN_PASSWORD $KEYCHAIN_PATH
 
           # import certificate to keychain
-          echo "security import $CERTIFICATE_PATH -P ${{ secrets.p12_password }} -A -t cert -f pkcs12 -k $KEYCHAIN_PATH"
-          security import $CERTIFICATE_PATH -P $P12_PASSWORD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security import $CERTIFICATE_PATH -P ${{ secrets.p12_password }} -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
 
           # apply provisioning profile
