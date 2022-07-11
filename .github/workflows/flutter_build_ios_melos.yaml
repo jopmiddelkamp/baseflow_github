@@ -38,6 +38,7 @@ jobs:
           KEYCHAIN_PASSWORD: ${{ secrets.ios_keychain_password }}
         run: |
           brew install libressl
+          xcrun swift test --enable-test-discovery --sanitize=thread -Xcxx "-I/usr/local/opt/openssl/include" -Xlinker "-L/usr/local/opt/openssl/lib"
           echo $(openssl version)
           echo "${{secrets.ios_provisioning_profile_asc}}" > provisioningprofile.mobileprovision.asc
           gpg -d --passphrase "${{ secrets.ios_provisioning_profile_password }}" --batch provisioningprofile.mobileprovision.asc > $RUNNER_TEMP/provisioningprofile.mobileprovision
