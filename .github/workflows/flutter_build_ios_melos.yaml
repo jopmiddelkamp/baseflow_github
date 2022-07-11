@@ -38,9 +38,9 @@ jobs:
           KEYCHAIN_PASSWORD: ${{ secrets.ios_keychain_password }}
         run: |
           echo "${{secrets.ios_provisioning_profile_asc}}" > provisioningprofile.mobileprovision.asc
-          gpg -d --passphrase "${{ secrets.ios_provisioning_profile_password }}" --batch provisioningprofile.mobileprovision.asc > provisioningprofile.mobileprovision
+          gpg -d --passphrase "${{ secrets.ios_provisioning_profile_password }}" --batch provisioningprofile.mobileprovision.asc > $RUNNER_TEMP/provisioningprofile.mobileprovision
           echo "${{secrets.ios_certificate_asc}}" > distribution.p12.asc
-          gpg -d --passphrase "${{ secrets.ios_certificate_password }}" --batch distribution.p12.asc > distribution.p12
+          gpg -d --passphrase "${{ secrets.ios_certificate_password }}" --batch distribution.p12.asc > $RUNNER_TEMP/distribution.p12
 
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/distribution.p12
