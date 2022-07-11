@@ -36,9 +36,8 @@ jobs:
           P12_PASSWORD: ${{ secrets.ios_signing_key_password }}
           BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.ios_provisioning_profile_asc }}
           KEYCHAIN_PASSWORD: ${{ secrets.ios_keychain_password }}
-      - run: brew install libressl
-      - run: xcrun swift test --enable-test-discovery --sanitize=thread -Xcxx "-I/usr/local/opt/openssl/include" -Xlinker "-L/usr/local/opt/openssl/lib"
-      - run: |
+        run: |
+          brew install libressl
           echo $(openssl version)
           echo "${{secrets.ios_provisioning_profile_asc}}" > provisioningprofile.mobileprovision.asc
           gpg -d --passphrase "${{ secrets.ios_provisioning_profile_password }}" --batch provisioningprofile.mobileprovision.asc > $RUNNER_TEMP/provisioningprofile.mobileprovision
