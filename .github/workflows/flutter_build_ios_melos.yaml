@@ -29,6 +29,7 @@ on:
 
 jobs:
   build:
+#    runs-on: self-hosted
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,7 +37,7 @@ jobs:
         with:
           channel: 'stable'
       - name: Download melos
-        run: dart pub global activate melos
+        run: flutter pub global activate melos
       - name: Melos init
         run: melos bootstrap && melos get && melos generate
       - name: Install the Apple certificate and provisioning profile
