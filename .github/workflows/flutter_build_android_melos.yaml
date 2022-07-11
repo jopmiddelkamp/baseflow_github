@@ -38,7 +38,7 @@ jobs:
       - name: Download melos
         run: dart pub global activate melos
       - name: Melos init
-        run: melos bootstrap && melos generate
+        run: melos bootstrap && melos get && melos generate
       - name: Decrypt keystore
         run: |
           echo "${{secrets.android_key_asc}}" > key.properties.asc
