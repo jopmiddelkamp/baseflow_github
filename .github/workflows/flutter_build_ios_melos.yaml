@@ -32,6 +32,10 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
+      - name: Download melos
+        run: dart pub global activate melos
+      - name: Melos init
+        run: melos bootstrap && melos get && melos generate
       - name: Install the Apple certificate and provisioning profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.ios_signing_key_asc }}
@@ -66,10 +70,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - run: sh pre_build.sh ${{ inputs.environment }}
-      - run: sh cli.sh --init
-      - run: flutter build ipa --release --flavor ${{ inputs.environment }} --target='lib/main_${{ inputs.environment }}.dart' --export-options-plist=ios/export_options.plist
+      - run: melos build:ipa:runner
         working-directory: ${{ inputs.app-dir }}
       - name: 'Upload app to TestFlight'
         uses: apple-actions/upload-testflight-build@v1
