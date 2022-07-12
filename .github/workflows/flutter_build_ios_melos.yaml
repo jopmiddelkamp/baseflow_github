@@ -5,6 +5,9 @@ on:
       app-dir:
         required: true
         type: string
+      app-path:
+        required: true
+        type: string
       environment: # options development|staging|production
         required: true
         type: string
