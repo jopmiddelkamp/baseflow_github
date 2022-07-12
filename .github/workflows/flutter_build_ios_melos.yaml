@@ -74,6 +74,7 @@ jobs:
         working-directory: ${{ inputs.app-dir }}
       - name: 'Upload app to TestFlight'
         uses: apple-actions/upload-testflight-build@v1
+        working-directory: ${{ inputs.app-dir }}
         with:
           app-path: ${{ inputs.app-path }}
           issuer-id: ${{ secrets.app_store_issuer_id}}
