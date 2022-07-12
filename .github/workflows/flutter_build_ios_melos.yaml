@@ -29,8 +29,8 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
-    #    runs-on: macos-latest
+    #    runs-on: self-hosted
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v2
@@ -71,9 +71,6 @@ jobs:
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
       - run: melos build:ios:runner
         working-directory: ${{ inputs.app-dir }}
       - name: 'Upload app to TestFlight'
