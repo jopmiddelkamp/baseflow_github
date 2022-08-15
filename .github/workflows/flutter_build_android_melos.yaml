@@ -11,6 +11,9 @@ on:
       packageName: # this should be optional.. https://github.com/r0adkll/upload-google-play/issues/103
         required: true
         type: string
+      flutter-version:
+        required: false
+        type: string
 
     secrets:
       android_key_asc:
@@ -37,13 +40,19 @@ jobs:
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options java-version
           java-version: '17'
-      
-      # Install the correct Flutter version on the build agent.
-      - name: Install Flutter on build agent
+      # Download Flutter (latest stable) if flutter_version is not specified.
+      - name: Download Flutter (latest stable)
+        if: ${{ inputs.flutter_version == '' }}
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
+      # Download Flutter (${{inputs.flutter_version}} stable) if flutter_version is specified.
+      - name: Download Flutter (${{inputs.flutter_version}} stable)
+        if: ${{ inputs.flutter_version != '' }}
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: ${{inputs.flutter_version}}
       # Download and install the Melos Dart package.
       - name: Download melos
         run: flutter pub global activate melos
