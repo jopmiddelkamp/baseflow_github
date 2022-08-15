@@ -40,19 +40,19 @@ jobs:
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options java-version
           java-version: '17'
-      # Download Flutter (latest stable) if flutter_version is not specified.
+      # Download Flutter (latest stable) if flutter-version is not specified.
       - name: Download Flutter (latest stable)
-        if: ${{ inputs.flutter_version == '' }}
+        if: ${{ inputs.flutter-version == '' }}
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      # Download Flutter (${{inputs.flutter_version}} stable) if flutter_version is specified.
-      - name: Download Flutter (${{inputs.flutter_version}} stable)
-        if: ${{ inputs.flutter_version != '' }}
+      # Download Flutter (${{inputs.flutter-version}} stable) if flutter-version is specified.
+      - name: Download Flutter (${{inputs.flutter-version}} stable)
+        if: ${{ inputs.flutter-version != '' }}
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: ${{inputs.flutter_version}}
+          flutter-version: ${{inputs.flutter-version}}
       # Download and install the Melos Dart package.
       - name: Download melos
         run: flutter pub global activate melos
