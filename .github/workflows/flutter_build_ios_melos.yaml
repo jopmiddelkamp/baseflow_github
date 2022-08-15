@@ -33,6 +33,7 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    
     steps:
       # Checkout the current GitHub repository.
       - uses: actions/checkout@v2
@@ -49,22 +50,22 @@ jobs:
       # Bootstrap Melos and download Flutter dependencies required by the project.
       - name: Install Dependencies
         run: melos bootstrap && melos get
-        working-directory: ${{env.app-dir}}
+        working-directory: ${{inputs.app-dir}}
 
       # Validate if the source code is formatted according to the Dart style guide (https://github.com/dart-lang/dart_style/wiki/Formatting-Rules).
       - name: Format
         run: melos format:set_exit_if_changed
-        working-directory: ${{env.app-dir}}
+        working-directory: ${{inputs.app-dir}}
 
       # Validate the source code against the configured linting rules (see `analysis_options.yaml`).
       - name: Analyze
         run: melos analyze
-        working-directory: ${{env.app-dir}}
+        working-directory: ${{inputs.app-dir}}
 
       # Runs all unit-tests that are part of the Flutter project.
       - name: Run tests
         run: melos test
-        working-directory: ${{env.app-dir}}
+        working-directory: ${{inputs.app-dir}}
 
       # Install the Apple signing certificate and provisioning profiles on the build agent.
       - name: Install the Apple certificate and provisioning profile

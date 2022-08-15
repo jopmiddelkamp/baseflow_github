@@ -48,31 +48,31 @@ jobs:
       # Bootstrap Melos and download Flutter dependencies required by the project.
       - name: Install Dependencies
         run: melos bootstrap && melos get
-        working-directory: ${{env.app-dir}}
+        working-directory: ${{inputs.app-dir}}
 
       # Validate if the source code is formatted according to the Dart style guide (https://github.com/dart-lang/dart_style/wiki/Formatting-Rules).
       - name: Format
         run: melos format:set_exit_if_changed
-        working-directory: ${{env.app-dir}}
+        working-directory: ${{inputs.app-dir}}
 
       # Validate the source code against the configured linting rules (see `analysis_options.yaml`).
       - name: Analyze
         run: melos analyze
-        working-directory: ${{env.app-dir}}
+        working-directory: ${{inputs.app-dir}}
 
       # Runs all unit-tests that are part of the Flutter project.
       - name: Run tests
         run: melos test
-        working-directory: ${{env.app-dir}}
+        working-directory: ${{inputs.app-dir}}
 
       # Decrypt the Android Keystore and configured passwords.
       - name: Decrypt keystore
         run: |
-          echo "${{env.ANDROID_KEY_ASC}}" > key.properties.asc
-          echo "${{env.ANDROID_KEYSTORE_ASC}}" > upload-keystore.jks.asc
-          gpg -d --passphrase "${{env.ANDROID_KEY_PASSPHRASE}}" --batch key.properties.asc > key.properties
-          gpg -d --passphrase "${{env.ANDROID_KEYSTORE_PASSPHRASE}}" --batch upload-keystore.jks.asc > upload-keystore.jks
-        working-directory: ${{env.source-dir}}/android
+          echo "${{secrets.ANDROID_KEY_ASC}}" > key.properties.asc
+          echo "${{secrets.ANDROID_KEYSTORE_ASC}}" > upload-keystore.jks.asc
+          gpg -d --passphrase "${{secrets.ANDROID_KEY_PASSPHRASE}}" --batch key.properties.asc > key.properties
+          gpg -d --passphrase "${{secrets.ANDROID_KEYSTORE_PASSPHRASE}}" --batch upload-keystore.jks.asc > upload-keystore.jks
+        working-directory: ${{inputs.app-dir}}/android
 
       # Build a production release of the Flutter project.
       - name: Build Android Production
@@ -82,8 +82,8 @@ jobs:
       - name: Release APPBUNDLE to internal track
         uses: r0adkll/upload-google-play@v1.0.16
         with:
-          serviceAccountJsonPlainText: ${{env.play_store_gservice_account}}
-          releaseFile: ${{env.source-dir}}/build/app/outputs/bundle/productionRelease/app-production-release.aab
+          serviceAccountJsonPlainText: ${{secrets.play_store_gservice_account}}
+          releaseFile: ${{inputs.app-dir}}/build/app/outputs/bundle/productionRelease/app-production-release.aab
           status: 'draft'
           track: internal
-          packageName: ${{env.packageName}}
+          packageName: ${{inputs.packageName}}
