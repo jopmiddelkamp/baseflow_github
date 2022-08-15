@@ -25,7 +25,7 @@ on:
         required: true
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v3
@@ -38,7 +38,7 @@ jobs:
       - name: Download melos
         run: dart pub global activate melos
       - name: Melos init
-        run: melos bootstrap && melos generate
+        run: melos bootstrap && melos get && melos generate
       - name: Decrypt keystore
         run: |
           echo "${{secrets.android_key_asc}}" > key.properties.asc
