@@ -52,22 +52,22 @@ jobs:
       # Bootstrap Melos and download Flutter dependencies required by the project.
       - name: Install Dependencies
         run: melos bootstrap && melos get
-        working-directory: ${{inputs.app-dir}}
+        working-directory: ${{ inputs.app-dir }}
 
       # Validate if the source code is formatted according to the Dart style guide (https://github.com/dart-lang/dart_style/wiki/Formatting-Rules).
       - name: Format
         run: melos format:set_exit_if_changed
-        working-directory: ${{inputs.app-dir}}
+        working-directory: ${{ inputs.app-dir }}
 
       # Validate the source code against the configured linting rules (see `analysis_options.yaml`).
       - name: Analyze
         run: melos analyze
-        working-directory: ${{inputs.app-dir}}
+        working-directory: ${{ inputs.app-dir }}
 
       # Runs all unit-tests that are part of the Flutter project.
       - name: Run tests
         run: melos test
-        working-directory: ${{inputs.app-dir}}
+        working-directory: ${{ inputs.app-dir }}
 
       # Install the Apple signing certificate and provisioning profiles on the build agent.
       - name: Install the Apple certificate and provisioning profile
@@ -84,9 +84,9 @@ jobs:
           RANDOM_KEYCHAIN_PASSWORD="$(openssl rand -hex 100)"
 
           # decrypt the provisioning profile and signing certificate
-          echo "${{secrets.ios_provisioning_profile_asc}}" > provisioningprofile.mobileprovision.asc
+          echo "${{ secrets.ios_provisioning_profile_asc }}" > provisioningprofile.mobileprovision.asc
           gpg -d --passphrase "${{ secrets.ios_provisioning_profile_password }}" --batch provisioningprofile.mobileprovision.asc > $PP_PATH
-          echo "${{secrets.ios_certificate_asc}}" > distribution.p12.asc
+          echo "${{ secrets.ios_certificate_asc }}" > distribution.p12.asc
           gpg -d --passphrase "${{ secrets.ios_certificate_password }}" --batch distribution.p12.asc > $CERTIFICATE_PATH
 
           # create temporary keychain
@@ -112,9 +112,9 @@ jobs:
         uses: apple-actions/upload-testflight-build@v1
         with:
           app-path: ${{ inputs.app-dir }}/${{ inputs.app-path }}
-          issuer-id: ${{ secrets.app_store_issuer_id}}
-          api-key-id: ${{ secrets.app_store_api_key_id}}
-          api-private-key: ${{ secrets.app_store_api_private_key}}
+          issuer-id: ${{ secrets.app_store_issuer_id }}
+          api-key-id: ${{ secrets.app_store_api_key_id }}
+          api-private-key: ${{ secrets.app_store_api_private_key }}
       
       # Ensure the installed secrets and certificates are removed from the build agent.
       - name: Clean up keychain and provisioning profile
