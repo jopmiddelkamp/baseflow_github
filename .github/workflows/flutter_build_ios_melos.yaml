@@ -33,15 +33,43 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v2
+      # Checkout the current GitHub repository.
+      - name: Checkout GitHub repository on build agent
+        uses: actions/checkout@v2
+      
+      # Install the correct Flutter version on the build agent.
+      - name: Install Flutter on build agent
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+
+      # Download and install the Melos Dart package.
       - name: Download melos
         run: flutter pub global activate melos
-      - name: Melos init
-        run: melos bootstrap && melos get && melos generate
+
+      # Bootstrap Melos and download Flutter dependencies required by the project.
+      - name: Install Dependencies
+        run: melos bootstrap && melos get
+        working-directory: ${{ inputs.app-dir }}
+
+      # Validate if the source code is formatted according to the Dart style guide (https://github.com/dart-lang/dart_style/wiki/Formatting-Rules).
+      - name: Format
+        run: melos format:set_exit_if_changed
+        working-directory: ${{ inputs.app-dir }}
+
+      # Validate the source code against the configured linting rules (see `analysis_options.yaml`).
+      - name: Analyze
+        run: melos analyze
+        working-directory: ${{ inputs.app-dir }}
+
+      # Runs all unit-tests that are part of the Flutter project.
+      - name: Run tests
+        run: melos test
+        working-directory: ${{ inputs.app-dir }}
+
+      # Install the Apple signing certificate and provisioning profiles on the build agent.
       - name: Install the Apple certificate and provisioning profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.ios_signing_key_asc }}
@@ -56,9 +84,9 @@ jobs:
           RANDOM_KEYCHAIN_PASSWORD="$(openssl rand -hex 100)"
 
           # decrypt the provisioning profile and signing certificate
-          echo "${{secrets.ios_provisioning_profile_asc}}" > provisioningprofile.mobileprovision.asc
+          echo "${{ secrets.ios_provisioning_profile_asc }}" > provisioningprofile.mobileprovision.asc
           gpg -d --passphrase "${{ secrets.ios_provisioning_profile_password }}" --batch provisioningprofile.mobileprovision.asc > $PP_PATH
-          echo "${{secrets.ios_certificate_asc}}" > distribution.p12.asc
+          echo "${{ secrets.ios_certificate_asc }}" > distribution.p12.asc
           gpg -d --passphrase "${{ secrets.ios_certificate_password }}" --batch distribution.p12.asc > $CERTIFICATE_PATH
 
           # create temporary keychain
@@ -73,15 +101,22 @@ jobs:
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-      - run: melos build:ios:runner
+
+      # Build a production release of the Flutter project.
+      - name: Build iOS production release
+        run: melos build:ios:runner
         working-directory: ${{ inputs.app-dir }}
+      
+      # Upload the production release to the Apple Store and make it available in TestFlight.
       - name: 'Upload app to TestFlight'
         uses: apple-actions/upload-testflight-build@v1
         with:
           app-path: ${{ inputs.app-dir }}/${{ inputs.app-path }}
-          issuer-id: ${{ secrets.app_store_issuer_id}}
-          api-key-id: ${{ secrets.app_store_api_key_id}}
-          api-private-key: ${{ secrets.app_store_api_private_key}}
+          issuer-id: ${{ secrets.app_store_issuer_id }}
+          api-key-id: ${{ secrets.app_store_api_key_id }}
+          api-private-key: ${{ secrets.app_store_api_private_key }}
+      
+      # Ensure the installed secrets and certificates are removed from the build agent.
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
         run: |
