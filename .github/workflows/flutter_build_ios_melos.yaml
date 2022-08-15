@@ -11,6 +11,9 @@ on:
       environment: # options development|staging|production
         required: true
         type: string
+      flutter-version:
+        required: false
+        type: string
 
     secrets:
       ios_provisioning_profile_password:
@@ -38,13 +41,19 @@ jobs:
       # Checkout the current GitHub repository.
       - name: Checkout GitHub repository on build agent
         uses: actions/checkout@v2
-      
-      # Install the correct Flutter version on the build agent.
-      - name: Install Flutter on build agent
+      # Download Flutter (latest stable) if flutter-version is not specified.
+      - name: Download Flutter (latest stable)
+        if: ${{ inputs.flutter-version == '' }}
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
+      # Download Flutter (${{inputs.flutter-version}} stable) if flutter-version is specified.
+      - name: Download Flutter (${{inputs.flutter-version}} stable)
+        if: ${{ inputs.flutter-version != '' }}
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: ${{inputs.flutter-version}}
       # Download and install the Melos Dart package.
       - name: Download melos
         run: flutter pub global activate melos
