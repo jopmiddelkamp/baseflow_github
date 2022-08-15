@@ -36,10 +36,12 @@ jobs:
     
     steps:
       # Checkout the current GitHub repository.
-      - uses: actions/checkout@v2
+      - name: Checkout GitHub repository on build agent
+        uses: actions/checkout@v2
       
       # Install the correct Flutter version on the build agent.
-      - uses: subosito/flutter-action@v2
+      - name: Install Flutter on build agent
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
@@ -101,7 +103,8 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       # Build a production release of the Flutter project.
-      - run: melos build:ios:runner
+      - name: Build iOS production release
+        run: melos build:ios:runner
         working-directory: ${{ inputs.app-dir }}
       
       # Upload the production release to the Apple Store and make it available in TestFlight.

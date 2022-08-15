@@ -28,16 +28,19 @@ jobs:
     runs-on: self-hosted
     steps:
       # Checkout the current GitHub repository.
-      - uses: actions/checkout@v2
+      - name: Checkout GitHub repository on build agent
+        uses: actions/checkout@v2
 
       # Install the correct JAVA version on the build agent.
-      - uses: actions/setup-java@v3
+      - name: Install JAVA on build agent
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options java-version
           java-version: '17'
       
       # Install the correct Flutter version on the build agent.
-      - uses: subosito/flutter-action@v2
+      - name: Install Flutter on build agent
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
@@ -75,7 +78,7 @@ jobs:
         working-directory: ${{inputs.app-dir}}/android
 
       # Build a production release of the Flutter project.
-      - name: Build Android Production
+      - name: Build Android production release
         run: melos build:android:runner
 
       # Upload the production release to the internal test track on Google Play Store.
