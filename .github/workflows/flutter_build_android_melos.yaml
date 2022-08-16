@@ -1,4 +1,4 @@
-name: Deploy Android
+name: Build & Deploy Android (melos)
 on:
   workflow_call:
     inputs:
@@ -40,7 +40,7 @@ jobs:
       # Pre-build script
       - name: Runing pre-build script
         if: ${{ inputs.pre-build-script != '' }}
-        run: sh ${{ inputs.pre-build-script }}
+        run: ${{ inputs.pre-build-script }}
 
       # Install the correct JAVA version on the build agent.
       - name: Install JAVA on build agent
@@ -100,6 +100,8 @@ jobs:
       # Build a production release of the Flutter project.
       - name: Build Android production release
         run: melos build:android:runner
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
 
       # Upload the production release to the internal test track on Google Play Store.
       - name: Release APPBUNDLE to internal track
