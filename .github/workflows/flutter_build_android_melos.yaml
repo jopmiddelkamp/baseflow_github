@@ -14,6 +14,9 @@ on:
       flutter-version:
         required: false
         type: string
+      pre-build-script:
+        required: false
+        type: string
 
     secrets:
       android_key_asc:
@@ -34,27 +37,35 @@ jobs:
       - name: Checkout GitHub repository on build agent
         uses: actions/checkout@v2
 
+      # Pre-build script
+      - name: Runing pre-build script
+        if: ${{ inputs.pre-build-script != '' }}
+        run: sh ${{run-pre-build}}
+
       # Install the correct JAVA version on the build agent.
       - name: Install JAVA on build agent
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options java-version
           java-version: '17'
-      # Download Flutter (latest stable) if flutter-version is not specified.
-      - name: Download Flutter (latest stable)
+
+      # Install Flutter (latest stable) if flutter-version is not specified.
+      - name: Install Flutter (latest stable)
         if: ${{ inputs.flutter-version == '' }}
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      # Download Flutter (${{inputs.flutter-version}} stable) if flutter-version is specified.
-      - name: Download Flutter (${{inputs.flutter-version}} stable)
+
+      # Install Flutter (${{inputs.flutter-version}} stable) if flutter-version is specified.
+      - name: Install Flutter (${{inputs.flutter-version}} stable)
         if: ${{ inputs.flutter-version != '' }}
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: ${{inputs.flutter-version}}
-      # Download and install the Melos Dart package.
-      - name: Download melos
+
+      # Install the Melos Dart package.
+      - name: Install melos
         run: flutter pub global activate melos
 
       # Bootstrap Melos and download Flutter dependencies required by the project.
