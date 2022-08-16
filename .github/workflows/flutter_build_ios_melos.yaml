@@ -48,7 +48,7 @@ jobs:
       # Pre-build script
       - name: Runing pre-build script
         if: ${{ inputs.pre-build-script != '' }}
-        run: sh ${{run-pre-build}}
+        run: sh ${{ inputs.pre-build-script }}
 
       # Install Flutter (latest stable) if flutter-version is not specified.
       - name: Install Flutter (latest stable)

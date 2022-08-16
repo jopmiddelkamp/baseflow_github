@@ -40,7 +40,7 @@ jobs:
       # Pre-build script
       - name: Runing pre-build script
         if: ${{ inputs.pre-build-script != '' }}
-        run: sh ${{run-pre-build}}
+        run: sh ${{ inputs.pre-build-script }}
 
       # Install the correct JAVA version on the build agent.
       - name: Install JAVA on build agent
