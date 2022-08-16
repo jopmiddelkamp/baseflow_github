@@ -14,6 +14,9 @@ on:
       flutter-version:
         required: false
         type: string
+      pre-build-script:
+        required: false
+        type: string
 
     secrets:
       ios_provisioning_profile_password:
@@ -41,21 +44,29 @@ jobs:
       # Checkout the current GitHub repository.
       - name: Checkout GitHub repository on build agent
         uses: actions/checkout@v2
-      # Download Flutter (latest stable) if flutter-version is not specified.
-      - name: Download Flutter (latest stable)
+
+      # Pre-build script
+      - name: Runing pre-build script
+        if: ${{ inputs.pre-build-script != '' }}
+        run: sh ${{ inputs.pre-build-script }}
+
+      # Install Flutter (latest stable) if flutter-version is not specified.
+      - name: Install Flutter (latest stable)
         if: ${{ inputs.flutter-version == '' }}
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      # Download Flutter (${{inputs.flutter-version}} stable) if flutter-version is specified.
-      - name: Download Flutter (${{inputs.flutter-version}} stable)
+
+      # Install Flutter (${{inputs.flutter-version}} stable) if flutter-version is specified.
+      - name: Install Flutter (${{inputs.flutter-version}} stable)
         if: ${{ inputs.flutter-version != '' }}
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: ${{inputs.flutter-version}}
-      # Download and install the Melos Dart package.
-      - name: Download melos
+
+      # Install the Melos Dart package.
+      - name: Install melos
         run: flutter pub global activate melos
 
       # Bootstrap Melos and download Flutter dependencies required by the project.
